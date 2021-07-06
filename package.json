@@ -1,0 +1,27 @@
+{
+  "name": "egora",
+  "version": "1.0.0",
+  "description": "An E-commerce website with basic e-commerce functionalities",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nafiz1307/Egora.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nafiz1307/Egora/issues"
+  },
+  "homepage": "https://github.com/nafiz1307/Egora#readme",
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "mongoose": "^5.13.2",
+    "nodemon": "^2.0.9"
+  }
+}
