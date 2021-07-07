@@ -1,66 +1,33 @@
-const mongoose = require("mongoose");
-const crypto = require("crypto");
-const {v1: uuidv1} = require("uuid");
+const mongoose = require('mongoose');
 
-const userSchema = new mongoose.Schema(
-  {
+const userSchema = new mongoose.Schema({
     name: {
-      type: String,
-      trim: true,
-      require: true,
-      maxlength: 32,
+        type : String,
+        required: true,
+        minimum : 6
     },
-    email: {
-      type: String,
-      trim: true,
-      require: true,
-      unique: 32,
+    email:{
+        type : String,
+        required: 'Email address is required',
+        lowercase: true,
+        match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address']
     },
-    hashedPassword: {
-      type: String,
-      require: true,
+    password:{
+        type: String,
+        required: 'Password is required',
+        minimum : 6
     },
     about: {
       type: String,
       trim: true,
-    },
-    salt: String,
-    role: {
-      type: Number,
-      default: 0,
     },
     history: {
       type: Array,
       default: [],
     },
   },
-  { timestamps: true }
+     {timestamps: true }
 );
 
-//virtual field
-userSchema
-  .virtual("password")
-  .set(function (password) {
-    this._password = password;
-    this.salt = uuidv1();
-    this.hashedPassword = this.encryptPassword(password);
-  })
-  .get(function () {
-    return this._password;
-  });
-
-userSchema.methods = {
-  encryptPassword: function (password) {
-    if (!password) return "";
-    try {
-      return crypto
-        .createHmac("sha1", this.salt)
-        .update(password)
-        .digest("hex");
-    } catch (err) {
-      return "";
-    }
-  },
-};
 
 module.exports = mongoose.model("User", userSchema);
