@@ -41,12 +41,12 @@ const userSchema = new mongoose.Schema(
 userSchema
   .virtual("password")
   .set(function (password) {
-    this.password = password;
+    this._password = password;
     this.salt = uuidv1();
     this.hashedPassword = this.encryptPassword(password);
   })
   .get(function () {
-    return this.password;
+    return this._password;
   });
 
 userSchema.methods = {
@@ -63,4 +63,4 @@ userSchema.methods = {
   },
 };
 
-module.exports = mongoose.model("User",userSchema);
+module.exports = mongoose.model("User", userSchema);
