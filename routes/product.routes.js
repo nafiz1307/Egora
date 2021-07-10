@@ -1,5 +1,9 @@
 const express = require("express");
-const { requireSignin, isAdmin,isAuth } = require("../controllers/auth.controllers");
+const {
+  requireSignin,
+  isAdmin,
+  isAuth,
+} = require("../controllers/auth.controllers");
 const { userById } = require("../controllers/user.controllers");
 const router = express.Router();
 
@@ -8,6 +12,7 @@ const {
   productById,
   read,
   remove,
+  update,
 } = require("../controllers/product.controllers");
 const { route } = require("./category.routes");
 
@@ -21,6 +26,14 @@ router.delete(
   isAdmin,
   remove
 );
+router.put(
+  "/product/:productId/:userId",
+  requireSignin,
+  isAuth,
+  isAdmin,
+  update
+);
+
 router.param("userId", userById);
 router.param("productId", productById);
 
