@@ -15,6 +15,8 @@ const {
   update,
   list,
   listRelated,
+  listCategories,
+  listBySearch,
 } = require("../controllers/product.controllers");
 const { route } = require("./category.routes");
 
@@ -38,6 +40,8 @@ router.put(
 
 router.get("/products", list);
 router.get("/products/related/:productId", listRelated);
+router.get("/products/categories", listCategories);
+router.post("/products/by/search");
 
 router.param("userId", userById);
 router.param("productId", productById);
