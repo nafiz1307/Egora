@@ -3,7 +3,7 @@ const { requireSignin, isAdmin } = require("../controllers/auth.controllers");
 const { userById } = require("../controllers/user.controllers");
 const router = express.Router();
 
-const { create } = require("../controllers/category.controllers");
+const { create , categoryById,read} = require("../controllers/category.controllers");
 
 //routes
 router.post(
@@ -13,6 +13,9 @@ router.post(
   isAdmin,
   create
 );
+router.get("/category/:categoryId",read)
+
+router.param("categoryId", categoryById);
 router.param("userId", userById);
 
 module.exports = router;
