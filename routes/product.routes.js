@@ -13,6 +13,8 @@ const {
   read,
   remove,
   update,
+  list,
+  listRelated,
 } = require("../controllers/product.controllers");
 const { route } = require("./category.routes");
 
@@ -33,6 +35,9 @@ router.put(
   isAdmin,
   update
 );
+
+router.get("/products", list);
+router.get("/products/related/:productId", listRelated);
 
 router.param("userId", userById);
 router.param("productId", productById);

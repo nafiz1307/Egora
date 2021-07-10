@@ -4,23 +4,22 @@ const { errorHandler } = require("../helpers/dbErrorHandler");
 const Product = require("../models/product.models");
 const fs = require("fs");
 
-exports.productById=(req,res,next,id)=>{
-    Product.findById(id).exec((err,product)=>{
-        if(err||!product){
-            return res.status(400).json({
-                error:"Product not Found!"
-            });
-        }
-        req.product = product;
-        next();
-    })
+exports.productById = (req, res, next, id) => {
+  Product.findById(id).exec((err, product) => {
+    if (err || !product) {
+      return res.status(400).json({
+        error: "Product not Found!",
+      });
+    }
+    req.product = product;
+    next();
+  });
 };
 
-exports.read = (req,res)=>{
-    req.product.photo = undefined
-    return res.json(req.product)
-}
-
+exports.read = (req, res) => {
+  req.product.photo = undefined;
+  return res.json(req.product);
+};
 
 exports.create = (req, res) => {
   let form = new formidable.IncomingForm();
@@ -35,7 +34,14 @@ exports.create = (req, res) => {
     //check for all fields
     const { name, description, price, category, quantity, shipping } = fields;
 
-    if (!name || !description || !price || !category || !quantity || !shipping) {
+    if (
+      !name ||
+      !description ||
+      !price ||
+      !category ||
+      !quantity ||
+      !shipping
+    ) {
       return res.status(400).json({
         error: "All fields are required",
       });
@@ -67,21 +73,19 @@ exports.create = (req, res) => {
   });
 };
 
-
-exports.remove = (req,res)=>{
-    let product = req.product
-    product.remove((err,deletedProduct)=>{
-        if(err){
-            return res.status(400).json({
-                error : errorHandler(err)
-            });
-        }
-        res.json({
-            "message" : "Product Deleted"
-        })
-    })
-}
-
+exports.remove = (req, res) => {
+  let product = req.product;
+  product.remove((err, deletedProduct) => {
+    if (err) {
+      return res.status(400).json({
+        error: errorHandler(err),
+      });
+    }
+    res.json({
+      message: "Product Deleted",
+    });
+  });
+};
 
 exports.update = (req, res) => {
   let form = new formidable.IncomingForm();
@@ -96,14 +100,21 @@ exports.update = (req, res) => {
     //check for all fields
     const { name, description, price, category, quantity, shipping } = fields;
 
-    if (!name || !description || !price || !category || !quantity || !shipping) {
+    if (
+      !name ||
+      !description ||
+      !price ||
+      !category ||
+      !quantity ||
+      !shipping
+    ) {
       return res.status(400).json({
         error: "All fields are required",
       });
     }
 
     let product = req.product;
-    product = _.extend(product,fields);
+    product = _.extend(product, fields);
     //1kb=1000
     //1mb=1000000
 
@@ -127,4 +138,47 @@ exports.update = (req, res) => {
       res.json(result);
     });
   });
+};
+
+//sell arrival sort
+//by sold = /products?sortBy=sold&order=desc&limit=4
+//by arrival = /products?sortBy=createdAt&order=desc&limit=4
+
+exports.list = (req, res) => {
+  let order = req.query.order ? req.query.order : "asc";
+  let sortBy = req.query.sortBy ? req.query.sortBy : "_id";
+  let limit = req.query.limit ? parseInt(req.query.limit) : 6;
+
+  Product.find()
+    .select("-photo")
+    .populate("category")
+    .sort([[sortBy, order]])
+    .limit(limit)
+    .exec((err, products) => {
+      if (err) {
+        return res.status(400).json({
+          error: "Products not found",
+        });
+      }
+      res.json(products);
+    });
+};
+
+//will find products based on req product category
+//products with same category will be returned
+
+exports.listRelated = (req, res) => {
+  let limit = req.query.limit ? parseInt(req.query.limit) : 6;
+
+  Product.find({ _id: { $ne: req.product }, category: req.product.category })
+    .limit(limit)
+    .populate("category", "_id name")
+    .exec((err, products) => {
+      if (err) {
+        return res.status(400).json({
+          error: "Products not found",
+        });
+      }
+      res.json(products)
+    });
 };
